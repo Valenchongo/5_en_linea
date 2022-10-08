@@ -3,37 +3,33 @@ import gamelib
 
 ANCHO_VENTANA = 300
 ALTO_VENTANA = 300
+DIMENSION = 10
+X = "X"
+O = "O"
 
 def juego_crear():
-    grilla = [["" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ],
-              ["" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ],
-              ["" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ],
-              ["" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ],
-              ["" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ],
-              ["" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ],
-              ["" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ],
-              ["" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ],
-              ["" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ],
-              ["" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ]]
-
+    """Inicializar el estado del juego"""
+    grilla =[]
+    for i in range(0,DIMENSION):
+        grilla.append(["" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ])
     return grilla  
 
 def turno (juego):
     """esta funcion sirve para saber si hay mas O o X en la partida para poder saber de quien sera el proximo turno, como se comienza con la X si hay mas X que O en la grilla quiere decir que es el turno de O"""
 
     contador_x=0
-    contador_y=0
-    for i in range (0,10):
-        for c in range (0,10):
-            if juego[i][c] == "X":
+    contador_o=0
+    for i in range (0,DIMENSION):
+        for c in range (0,DIMENSION):
+            if juego[i][c] == X:
                 contador_x = contador_x + 1
-            elif juego[i][c] == "O":
-                contador_y = contador_y +1
+            elif juego[i][c] == O:
+                contador_o = contador_o +1
 
-    if (contador_x > contador_y):
-        turno = "O"
+    if (contador_x > contador_o):
+        turno = O
     else:
-        turno = "X"    
+        turno = X    
     return turno      
 
 def juego_actualizar(juego, x, y):
@@ -41,49 +37,41 @@ def juego_actualizar(juego, x, y):
 
     if (y<30 or y>330): #si el click esta fuera de las coordenadas dentro del mapa te retorna el juego tal como estaba antes
        return juego
-       
-    else:    
-     x , y = x/30 , (y-30)/30
-     x , y =  floor(x) , floor(y)
-     turn = turno(juego)         
-     if ( juego[y][x]== "" ):
-         juego[y][x]= turn
 
+    x , y = x//30 , (y-30)//30
+    turn = turno(juego)         
+    if ( juego[y][x]== "" ):
+        juego[y][x]= turn
     return juego     
-
 
 def juego_mostrar(juego):
    y_linea = 60
    x_linea = 30
-   gamelib.draw_rectangle(0, 30, 300, 330, outline='white', fill='black')
+   gamelib.draw_rectangle(0, ALTO_VENTANA // DIMENSION, ANCHO_VENTANA, ALTO_VENTANA+30, outline='white', fill='black')
    gamelib.draw_text('5 en línea', 150, 20)
    turn = turno(juego)
    gamelib.draw_text(f'Turno de : {turn}', 150, 360)
   
    for i in range(0,9):
-     gamelib.draw_line(0, y_linea, 300,  y_linea, fill='white', width=1)
-     gamelib.draw_line(x_linea, 30,x_linea,330, fill='white', width=1)
-     y_linea =  y_linea+30
-     x_linea = x_linea+30
+     y_linea =  (i + 2) * 30
+     x_linea = (i + 1) * 30
+     gamelib.draw_line(0, y_linea, ANCHO_VENTANA,  y_linea, fill='white', width=1)
+     gamelib.draw_line(x_linea, ANCHO_VENTANA // DIMENSION,x_linea,330, fill='white', width=1)
   
-   y_jugador = 45 #posicion de la marca en juego[0]
-   for i in range (0,10):
-     x_jugador = 15 #posicion de la marca en juego[0][0]
-     for c in range (0,10):
-        if juego[i][c] == "X":
-            gamelib.draw_text("X", x_jugador, y_jugador)
-            x_jugador = x_jugador+30
-        
-        elif juego[i][c] == "O":
-            gamelib.draw_text("O", x_jugador, y_jugador)
-            x_jugador = x_jugador+30   
-        else:
-            x_jugador = x_jugador+30
+   y_jugador = 45    #posicion de la marca en juego[0]
+   for i in range (0,DIMENSION):
+        x_jugador = 15    #posicion de la marca en juego[0][0]
+        for c in range (0,DIMENSION):
+            if juego[i][c] == X:
+                gamelib.draw_text(X, x_jugador, y_jugador)
+ 
+            elif juego[i][c] == O:
+                gamelib.draw_text(O, x_jugador, y_jugador)
 
-     y_jugador = y_jugador+30     
-
-            
-
+            x_jugador = x_jugador+30       
+  
+        y_jugador = y_jugador+30     
+         
 def main():
     juego = juego_crear()
 
@@ -118,4 +106,5 @@ def main():
             juego = juego_actualizar(juego, x, y)
 
 gamelib.init(main)
+
 
